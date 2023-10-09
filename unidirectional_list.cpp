@@ -94,6 +94,14 @@ bool Link::Intersection(const std::shared_ptr<Link> second_link){
     (this->segment_[1] > second_link->segment_[1] || abs(this->segment_[1] - second_link->segment_[1]) <= 
     std::max(this->segment_[1], second_link->segment_[1])*std::numeric_limits<double>::epsilon())){ return true; }
 
+    else if(
+    // -----------------------[t1_____{A_______B}______t2]---- 
+    (this->segment_[0] > second_link->segment_[0] || abs(this->segment_[0] - second_link->segment_[0]) <= 
+    std::max(this->segment_[0], second_link->segment_[0])*std::numeric_limits<double>::epsilon()) 
+            && 
+    (this->segment_[1] < second_link->segment_[1] || abs(this->segment_[1] - second_link->segment_[1]) <= 
+    std::max(this->segment_[1], second_link->segment_[1])*std::numeric_limits<double>::epsilon())){ return true; }
+
     else{ return false; }
 }
 
@@ -126,41 +134,86 @@ void Link::Combining(const std::shared_ptr<Link> second_link){
 // Method to extract segments 
 void Link::Extract(const std::shared_ptr<Link> second_link){
 
-    if( // -----------------[t1______{A_____t2]_____B}------------
-    (this->segment_[0] > second_link->segment_[0] || abs(this->segment_[0] - second_link->segment_[0])<= 
-    std::max(this->segment_[0], second_link->segment_[0])*std::numeric_limits<double>::epsilon()) 
-            && 
-    (this->segment_[0] < second_link->segment_[1] || abs(this->segment_[0] - second_link->segment_[1])<= 
-    std::max(this->segment_[0], second_link->segment_[1])*std::numeric_limits<double>::epsilon())  )
+    if( 
+    // ----[t1______{A_____t2]_____B}----- 
+    (this->segment_[0] > second_link->segment_[0]) 
+    && 
+    (this->segment_[0] < second_link->segment_[1] )
+    &&
+    (this->segment_[1] > second_link->segment_[1])
+    )
     {
         this->segment_[0] = second_link->segment_[1];
     }
 
+    else if(
+    //----[t1_______{A1_______t2==B]}-------------
+    (this->segment_[0] > second_link->segment_[0]) 
+    && 
+    (this->segment_[0] < second_link->segment_[1] )
+    &&
+    (abs(this->segment_[1] - second_link->segment_[1])<= 
+    std::max(this->segment_[1], second_link->segment_[1])*std::numeric_limits<double>::epsilon())
+    )
+    {
+        this->segment_[0] = 0.;
+        this->segment_[1] = 0.;
+    }
 
     else if(
-    // ------------------------{A______[t1_____B}______t2}----    
-    (this->segment_[1] > second_link->segment_[0] || abs(this->segment_[1] - second_link->segment_[0])<= 
-    std::max(this->segment_[1], second_link->segment_[0])*std::numeric_limits<double>::epsilon()) 
-            && 
-    (this->segment_[1] < second_link->segment_[1] || abs(this->segment_[1] - second_link->segment_[1])<= 
-    std::max(this->segment_[1], second_link->segment_[1])*std::numeric_limits<double>::epsilon()))
+    // -------{A______[t1_____B}______t2}----   
+    (this->segment_[1] > second_link->segment_[0]) 
+    && 
+    (this->segment_[1] < second_link->segment_[1] )
+    &&
+    this->segment_[0] < second_link->segment_[0]
+    )
     {
         this->segment_[1] = second_link->segment_[0];
     }
 
     else if(
-    // -----------------------{A_____[t1_______t2]______B}----    
-    (this->segment_[0] < second_link->segment_[0] || abs(this->segment_[0] - second_link->segment_[0])<= 
-    std::max(this->segment_[0], second_link->segment_[0])*std::numeric_limits<double>::epsilon()) 
+        //-----{A==t1_____B}_____t2]----------
+        (this->segment_[1] > second_link->segment_[0]) 
+        && 
+        (this->segment_[1] < second_link->segment_[1] )
+        &&
+        ((abs(this->segment_[0] - second_link->segment_[0])<= 
+        std::max(this->segment_[0], second_link->segment_[0])*std::numeric_limits<double>::epsilon()))
+    )
+    {
+        this->segment_[0] = 0.;
+        this->segment_[1] = 0.;
+    }
+
+    else if(
+    // ---------{A_____[t1_______t2]______B}----  where A != t1 and B != t2 
+    (this->segment_[0] < second_link->segment_[0]) 
             && 
-    (this->segment_[1] > second_link->segment_[1] || abs(this->segment_[1] - second_link->segment_[1])<= 
-    std::max(this->segment_[1], second_link->segment_[1])*std::numeric_limits<double>::epsilon()))
+    (this->segment_[1] > second_link->segment_[1]))
     {  
         std::shared_ptr<Link> tmp = std::make_shared<Link>(second_link->segment_[1], this->segment_[1], this->next_link_);
 
         this->segment_[1] = second_link->segment_[0];
         
         this->next_link_ = std::move(tmp);
+    }
+
+    else if(
+    // -------{t1<=A_______B<=t2}----   
+    (abs(this->segment_[0] - second_link->segment_[0])<= 
+    std::max(this->segment_[0], second_link->segment_[0])*std::numeric_limits<double>::epsilon() 
+    || 
+    second_link->segment_[0] < this->segment_[0])
+        && 
+    (abs(this->segment_[1] - second_link->segment_[1])<= 
+    std::max(this->segment_[1], second_link->segment_[1])*std::numeric_limits<double>::epsilon()
+    ||
+    this->segment_[1] < second_link->segment_[1])
+    )
+    {
+        this->segment_[0] = 0.;
+        this->segment_[1] = 0.;
     }
 }
 //------------------------------------------------------
@@ -247,13 +300,38 @@ List::List(size_t length_, std::unique_ptr<double[]> links){
 
 // ------ Methods --------------------------------------
 
+void List::output_list(){
+
+    for(size_t i = 0; i < this->length_; i++){
+        if(i==0){
+            std::cout<<" ["<< this->first_link_->segment_[0]<<", "<< this->first_link_->segment_[1]<<"]"<<std::endl;
+            this->current_link_ = this->first_link_;
+        }
+        else{
+            this->current_link_ = this->current_link_->next_link_;
+            std::cout<<" ["<< this->current_link_->segment_[0] <<", "<< this->current_link_->segment_[1]<<"]"<<std::endl;
+        }
+    }
+}
+
+
 // Insert elements into list
 void List::App(std::unique_ptr<double[]> add_segment){
 
-    this->current_link_ = this->first_link_;
     std::shared_ptr<Link> tmp = std::make_shared<Link>(std::move(add_segment));
 
-    for(size_t i=1, count=0; i <= this->length_; ++i){
+     if(this->length_ == 0){
+        this->first_link_ = tmp;
+        this->length_++;
+    }
+
+    for(size_t i=0, count=0; i < this->length_; i++){
+        
+        if(i == 0){ this->current_link_ = this->first_link_; }
+        else{ this->current_link_ = this->current_link_->next_link_; }
+
+        
+
         if(this->current_link_->Intersection(tmp)){
             this->current_link_->Combining(tmp);
             
@@ -263,10 +341,13 @@ void List::App(std::unique_ptr<double[]> add_segment){
             count++;
             this->current_link_ = this->current_link_->next_link_;
         }
-
-        if(count == 0 && i == this->length_){
-            this->current_link_->next_link_ = tmp;
+      
+        if(count == 0 && i == this->length_-1){
             this->length_++;
+
+            this->current_link_->next_link_ = tmp;
+
+            break;
         }
     }
 }
@@ -274,12 +355,46 @@ void List::App(std::unique_ptr<double[]> add_segment){
 // Delete elements in list
 void List::Pop(std::unique_ptr<double[]> pop_segment){
 
-    this->current_link_ = this->first_link_;
     std::shared_ptr<Link> tmp = std::make_shared<Link>(std::move(pop_segment));
 
-    for(size_t i=1; i<=this->length_; ++i){
+    for(size_t i=0; i < this->length_; ++i){
+        if(i == 0){ this->current_link_ = this->first_link_; }
+        else{ this->current_link_ = this->current_link_->next_link_; }
+
         if(this->current_link_->Intersection(tmp)){
             this->current_link_->Extract(tmp);
+        }
+    }
+
+    for(size_t i=0; i < this->length_; ++i){
+
+        if(i == 0){ this->current_link_ = this->first_link_; }
+        else{ 
+            tmp = this->current_link_;
+            this->current_link_ = this->current_link_->next_link_; 
+        }
+
+        if(
+            abs(this->current_link_->segment_[0]) <= std::numeric_limits<double>::epsilon()
+            &&
+            abs(this->current_link_->segment_[1]) <= std::numeric_limits<double>::epsilon()
+            && i == 0
+        ){
+            this->first_link_ = this->current_link_->next_link_;
+            this->length_--;
+
+            --i;
+        }
+        else if(
+            abs(this->current_link_->segment_[0]) <= std::numeric_limits<double>::epsilon()
+            &&
+            abs(this->current_link_->segment_[1]) <= std::numeric_limits<double>::epsilon()
+            && i > 0
+        ){
+            this->current_link_ = tmp;
+            this->current_link_->next_link_ = this->current_link_->next_link_->next_link_;
+
+            this->length_--;
         }
     }
 }

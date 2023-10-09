@@ -2,7 +2,8 @@
 
 std::unique_ptr<double[]> input_by_console(size_t length){
 
-    std::unique_ptr<double[]> inpSegments = std::make_unique<double[]>(2 * length);
+    std::unique_ptr<double[]> inpSegments;
+    inpSegments = std::make_unique<double[]>(length*2);
 
     std::cout<< "Input elements of list: "<< std::endl;
 
@@ -16,7 +17,7 @@ std::unique_ptr<double[]> input_by_console(size_t length){
             std::cout<<"["<< i+1 <<"] element: "; std::cin>> inpSegments[2*i] >>inpSegments[2*i+1];
         }
 
-         if(inpSegments[2*i]>inpSegments[2*i+1]){
+        if(inpSegments[2*i]>inpSegments[2*i+1]){
             double tmp = inpSegments[2*i];
             inpSegments[2*i] = inpSegments[2*i+1];
             inpSegments[2*i+1] = tmp;
@@ -24,8 +25,8 @@ std::unique_ptr<double[]> input_by_console(size_t length){
 
         std::cout<<" Read: ["<<inpSegments[2*i]<<", "<< inpSegments[2*i+1]<<"]\n\n";
     }
-
-    return std::move(inpSegments);
+ 
+    return inpSegments;
 }
 
 // Output of list

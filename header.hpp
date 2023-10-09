@@ -1,7 +1,7 @@
 #include "unidirectional_list.hpp"
 #include <limits>
 
-// Input the array of segment elements
+// Input the array of segment elements in console
 std::unique_ptr<double[]> input_by_console(size_t );
 
 

@@ -64,8 +64,12 @@ public:
 	// It is constructor wich have length and links in array
 	List(size_t, std::unique_ptr<double[]>);
 
-	~List(){};
+	~List(){};	
 	// ------ Methods -----------------------------------
+
+	// Output list
+	void output_list();
+
 	// ------ Add segments in the list
 	void App(std::unique_ptr<double[]>); // Add segment at the random place
 
