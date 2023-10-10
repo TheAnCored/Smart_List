@@ -62,6 +62,8 @@ int main(){
             {
                 output_list(list);
             } break;
+
+            default: break;
         }
 
     }while(answ != 'N' || answ != 'n');

@@ -16,6 +16,7 @@ public:
 
 	// Constructor with the segment as two digits and next_link
 	Link( double, double, std::shared_ptr<Link>);
+	Link(double, double);
 
 	// Constructor with the segment
 	Link( std::unique_ptr<double[]>);
@@ -35,6 +36,8 @@ public:
 	// Operator =
 	Link& operator=(Link);
 
+	void output_link();
+
 	// Method of comparsion segments on intersection
 	bool Intersection(const std::shared_ptr<Link>);
 
@@ -42,7 +45,7 @@ public:
 	void Combining(const std::shared_ptr<Link>);
 
 	// Method to extract segments
-	void Extract(const std::shared_ptr<Link>);
+	void Extract(const std::shared_ptr<Link>, size_t& );
 };
 
 class List{
@@ -69,6 +72,8 @@ public:
 
 	// Output list
 	void output_list();
+
+	void RemIntersect();
 
 	// ------ Add segments in the list
 	void App(std::unique_ptr<double[]>); // Add segment at the random place

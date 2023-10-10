@@ -12,7 +12,7 @@ std::unique_ptr<double[]> input_by_console(size_t length){
         std::cout<<"["<< i+1 <<"] element: "; std::cin>> inpSegments[2*i] >>inpSegments[2*i+1];
 
         while(abs(inpSegments[2*i] - inpSegments[2*i+1]) < std::numeric_limits<double>::epsilon()*std::max(inpSegments[2*i], inpSegments[2*i+1])){
-            std::cout<<"\n You have write equals digits. Try input again!\n\n";
+            std::cout<<"\n You have written equals digits. Try input again!\n\n";
             
             std::cout<<"["<< i+1 <<"] element: "; std::cin>> inpSegments[2*i] >>inpSegments[2*i+1];
         }
