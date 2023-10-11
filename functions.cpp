@@ -3,6 +3,8 @@
 std::unique_ptr<double[]> input_by_console(size_t length){
 
     std::unique_ptr<double[]> inpSegments;
+
+    std::cout<<"--1--\n";
     inpSegments = std::make_unique<double[]>(length*2);
 
     std::cout<< "Input elements of list: "<< std::endl;
@@ -25,7 +27,7 @@ std::unique_ptr<double[]> input_by_console(size_t length){
 
         std::cout<<" Read: ["<<inpSegments[2*i]<<", "<< inpSegments[2*i+1]<<"]\n\n";
     }
- 
+    std::cout<<"--2--\n";
     return inpSegments;
 }
 

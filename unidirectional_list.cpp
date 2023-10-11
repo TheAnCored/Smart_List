@@ -297,7 +297,7 @@ List::List(){
 
 List::List(size_t length_){
 
-    for(size_t i=0; i<length_; i++){
+    for(size_t i=0; i<=length_; i++){
         if(i == 0){
             
             this->first_link_ = std::make_shared<Link>();
@@ -367,6 +367,8 @@ List::List(size_t length_, std::unique_ptr<double[]> links){
 
 void List::output_list(){
 
+    std::cout<<"--10--\n";
+
     for(size_t i = 0; i < this->length_; i++){
         if(i==0){
             std::cout<<" ["<< this->first_link_->segment_[0]<<", "<< this->first_link_->segment_[1]<<"]"<<std::endl;
@@ -377,19 +379,20 @@ void List::output_list(){
             std::cout<<" ["<< this->current_link_->segment_[0] <<", "<< this->current_link_->segment_[1]<<"]"<<std::endl;
         }
     }
+    std::cout<<"--11--\n";
 }
 
 void List::RemIntersect(){
-    
+
     std::shared_ptr<Link> tmp = nullptr;
     std::shared_ptr<Link> prev = nullptr;
 
-    for(size_t i=0; i<this->length_-1; i++){
+    for(int i=0; i < static_cast<int>(this->length_) - 1; i++){
 
         if(i==0){ this->current_link_ = this->first_link_;}
         else{ this->current_link_ = this->current_link_->next_link_;}
 
-        for(size_t j=i+1; j < this->length_; j++){ 
+        for(int j=i+1; j < static_cast<int>(this->length_); j++){ 
             if(j == i+1){ prev = this->current_link_;}
             else{ prev = tmp;}
             tmp = this->current_link_->next_link_;
@@ -406,6 +409,7 @@ void List::RemIntersect(){
             }
         }
     }
+
 }
 
 
@@ -454,7 +458,7 @@ void List::Pop(std::unique_ptr<double[]> pop_segment){
         else{ this->current_link_ = this->current_link_->next_link_; }
 
         if(this->current_link_->Intersection(tmp)){
-            
+
             size_t& length = this->length_;
             this->current_link_->Extract(tmp, length);
         }

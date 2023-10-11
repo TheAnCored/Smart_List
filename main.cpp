@@ -9,9 +9,12 @@ int main(){
 
     std::cout<< " Input length of list: "; std::cin >> length; std::cout <<std::endl;
 
-    std::unique_ptr<double[]> array = input_by_console(length);
 
-    List list(length, std::move(array));
+    std::unique_ptr<double[]> array;
+
+    array = input_by_console(length);
+
+    List list = List(length, std::move(array));
 
     output_list(list);
 
@@ -21,6 +24,7 @@ int main(){
         if(answ>90){ answ -= 32; }
         if(answ == 'n' || answ == 'N'){ break;}
         
+
 
         switch(answ){
             case 'A': 
